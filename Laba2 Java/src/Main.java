@@ -16,7 +16,7 @@ public class Main {
   }
 
   public static void main(String[] args) {
-    System.out.println("=== Система обробки платежів ===");
+    System.out.println("Система обробки платежів");
 
     try {
       processPayment(500.0);
