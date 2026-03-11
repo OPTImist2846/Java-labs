@@ -14,4 +14,17 @@ public class Main {
 
     System.out.println("Платіж" + amount + " успішно проведено.");
   }
+
+  public static void main(String[] args) {
+    System.out.println("=== Система обробки платежів ===");
+
+    try {
+      processPayment(500.0);
+      processPayment(-50.0);
+      processPayment(100.0);
+
+    } catch (InvalidPaymentException e) {
+      System.out.println("ПОМИЛКА: " + e.getMessage());
+    }
+  }
 }
