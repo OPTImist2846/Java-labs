@@ -38,7 +38,7 @@ public class Main {
     }
 
     private static void testTask3And4() {
-        System.out.println("=== ТЕСТ ЗАВДАННЯ 3 (task3.Box<T>) ===");
+        System.out.println("ТЕСТ ЗАВДАННЯ 3 (task3.Box<T>) ");
 
         Box<Integer> integerBox = new Box<>();
         integerBox.putItem(42);
