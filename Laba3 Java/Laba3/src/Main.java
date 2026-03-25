@@ -24,10 +24,23 @@ public class Main {
     }
 
     private static void testTask3And4() {
-        System.out.println("ТЕСТ ЗАВДАННЯ 3 (Box<T>)");
+        System.out.println("=== ТЕСТ ЗАВДАННЯ 3 (Box<T>) ===");
+
         Box<Integer> integerBox = new Box<>();
-        integerBox.putItem(123);
+        integerBox.putItem(42);
         System.out.println("У коробці з числами лежить: " + integerBox.getItem());
+
+        Box<String> stringBox = new Box<>();
+        stringBox.putItem("Секретний лист");
+        System.out.println("У коробці з текстом лежить: " + stringBox.getItem());
+
+        Box<Double> doubleBox = new Box<>();
+        doubleBox.putItem(3.14159);
+        System.out.println("У коробці з дробовими числами лежить: " + doubleBox.getItem());
+
+        Box<Student> studentBox = new Box<>();
+        studentBox.putItem(new Student(999, "Олесь"));
+        System.out.println("У коробці зі студентом лежить: " + studentBox.getItem());
 
         System.out.println("\nТЕСТ ЗАВДАННЯ 4 (findMax)");
         Integer[] intArray = {3, 9, 1, 14, 5};
