@@ -70,4 +70,17 @@ public class Main {
         System.out.println("Загальна площа кіл: " + ShapeCalculator.calculateTotalArea(circles));
         System.out.println("Загальна площа прямокутників: " + ShapeCalculator.calculateTotalArea(rectangles));
     }
+
+    private static void testTask7() {
+        System.out.println("=== ТЕСТ ЗАВДАННЯ 7 (? super Integer) ===");
+
+        List<Integer> intList = new ArrayList<>();
+        List<Number> numList = new ArrayList<>();
+
+        System.out.print("Додаємо в List<Integer>: ");
+        NumberAdder.addNumbers(intList);
+
+        System.out.print("Додаємо в List<Number>: ");
+        NumberAdder.addNumbers(numList);
+    }
 }
