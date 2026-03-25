@@ -14,7 +14,7 @@ public class Main {
         registry.removeStudent(103);
         registry.displayAllStudents();
 
-        System.out.println("\n=== ТЕСТ ЗАВДАННЯ 2 (Set та підрахунок) ===");
+        System.out.println("\nТЕСТ ЗАВДАННЯ 2 (Set та підрахунок)");
 
         List<String> names = Arrays.asList("Анна", "Петро", "Анна", "Іван", "Петро", "Анна");
         System.out.println("Оригінальний список: " + names);
