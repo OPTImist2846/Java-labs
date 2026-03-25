@@ -1,3 +1,17 @@
+import task1.Student;
+import task1.StudentRegistry;
+import task2.UniqueStorage;
+import task3.Box;
+import task4.GenericUtils;
+import task5.Pair;
+import task6.Circle;
+import task6.Rectangle;
+import task6.ShapeCalculator;
+import task7.NumberAdder;
+import  task8.Cat;
+import  task8.Dog;
+import  task8.Labrador;
+import  task8.AnimalShelter;
 import java.util.*;
 
 public class Main {
@@ -24,7 +38,7 @@ public class Main {
     }
 
     private static void testTask3And4() {
-        System.out.println("=== ТЕСТ ЗАВДАННЯ 3 (Box<T>) ===");
+        System.out.println("=== ТЕСТ ЗАВДАННЯ 3 (task3.Box<T>) ===");
 
         Box<Integer> integerBox = new Box<>();
         integerBox.putItem(42);
@@ -48,7 +62,7 @@ public class Main {
     }
 
     private static void testTask5And6() {
-        System.out.println("ТЕСТ ЗАВДАННЯ 5 (Клас Pair)");
+        System.out.println("ТЕСТ ЗАВДАННЯ 5 (Клас task5.Pair)");
 
         Pair<String, Integer> pair1 = new Pair<>("Яблуко", 10);
         Pair<String, Integer> pair2 = new Pair<>("Яблуко", 10);
@@ -61,7 +75,7 @@ public class Main {
         System.out.println("Пара 1 та Пара 2 однакові? -> " + pair1.comparePairs(pair2)); // true
         System.out.println("Пара 1 та Пара 3 однакові? -> " + pair1.comparePairs(pair3)); // false
 
-        System.out.println("\nТЕСТ ЗАВДАННЯ 6 (? extends Shape)");
+        System.out.println("\nТЕСТ ЗАВДАННЯ 6 (? extends task6.Shape)");
 
         List<Circle> circles = Arrays.asList(new Circle(2.0), new Circle(3.0));
 
@@ -72,7 +86,7 @@ public class Main {
     }
 
     private static void testTask7() {
-        System.out.println("=== ТЕСТ ЗАВДАННЯ 7 (? super Integer) ===");
+        System.out.println("ТЕСТ ЗАВДАННЯ 7 (? super Integer)");
 
         List<Integer> intList = new ArrayList<>();
         List<Number> numList = new ArrayList<>();
@@ -82,5 +96,26 @@ public class Main {
 
         System.out.print("Додаємо в List<Number>: ");
         NumberAdder.addNumbers(numList);
+    }
+
+    private static void testTask8() {
+        System.out.println("\nТЕСТ ЗАВДАННЯ 8 (Притулок для тварин)");
+
+        AnimalShelter shelter = new AnimalShelter();
+
+        Dog normalDog = new Dog();
+        Labrador myLabrador = new Labrador();
+        Cat myCat = new Cat();
+
+        shelter.addAnimals(shelter.getDogList(), normalDog);
+        shelter.addAnimals(shelter.getDogList(), myLabrador);
+
+        shelter.addOtherAnimal(myCat);
+
+        System.out.println("--- Звуки у вольєрі для собак ---");
+        shelter.printAnimalSounds(shelter.getDogList());
+
+        System.out.println("--- Звуки у вольєрі для інших тварин ---");
+        shelter.printAnimalSounds(shelter.getOtherAnimalsList());
     }
 }
