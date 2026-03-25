@@ -1,3 +1,5 @@
+package task5;
+
 public class Pair<T, U> {
     private T first;
     private U second;

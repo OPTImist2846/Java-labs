@@ -1,3 +1,5 @@
+package task4;
+
 public class GenericUtils {
 
     public static <T extends Comparable<T>> T findMax(T[] array) {

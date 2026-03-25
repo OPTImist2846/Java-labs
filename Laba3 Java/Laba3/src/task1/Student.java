@@ -1,7 +1,6 @@
-import java.util.HashMap;
-import java.util.Map;
+package task1;
 
-class Student {
+public class Student {
     private int studentId;
     private String name;
 

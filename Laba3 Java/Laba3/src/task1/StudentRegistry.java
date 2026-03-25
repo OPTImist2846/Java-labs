@@ -1,7 +1,9 @@
+package task1;
+
 import java.util.HashMap;
 import java.util.Map;
 
-class StudentRegistry {
+public class  StudentRegistry {
     private Map<Integer, Student> registry = new HashMap<>();
 
     public void addStudent(Student student) {
