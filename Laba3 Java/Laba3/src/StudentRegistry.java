@@ -1,23 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
 
-class Student {
-    private int studentId;
-    private String name;
-
-    public Student(int studentId, String name) {
-        this.studentId = studentId;
-        this.name = name;
-    }
-
-    public int getStudentId() { return studentId; }
-
-    @Override
-    public String toString() {
-        return "Студент {ID=" + studentId + ", Ім'я='" + name + "'}";
-    }
-}
-
 class StudentRegistry {
     private Map<Integer, Student> registry = new HashMap<>();
 
@@ -46,7 +29,6 @@ class StudentRegistry {
 
     public void displayAllStudents() {
         System.out.println("--- Список усіх студентів ---");
-        // Перебираємо всі значення (values) у нашому реєстрі
         for (Student s : registry.values()) {
             System.out.println(s);
         }
