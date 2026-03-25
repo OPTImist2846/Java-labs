@@ -34,5 +34,27 @@ public class Main {
         System.out.println("Максимум у Integer[]: " + GenericUtils.findMax(intArray));
     }
 
+    private static void testTask5And6() {
+        System.out.println("ТЕСТ ЗАВДАННЯ 5 (Клас Pair)");
 
+        Pair<String, Integer> pair1 = new Pair<>("Яблуко", 10);
+        Pair<String, Integer> pair2 = new Pair<>("Яблуко", 10);
+        Pair<String, Integer> pair3 = new Pair<>("Банан", 5);
+
+        Pair<Integer, String> pair4 = new Pair<>(10, "Яблуко");
+
+        System.out.println("Пара 1: " + pair1);
+        System.out.println("Пара 4: " + pair4);
+        System.out.println("Пара 1 та Пара 2 однакові? -> " + pair1.comparePairs(pair2)); // true
+        System.out.println("Пара 1 та Пара 3 однакові? -> " + pair1.comparePairs(pair3)); // false
+
+        System.out.println("\nТЕСТ ЗАВДАННЯ 6 (? extends Shape)");
+
+        List<Circle> circles = Arrays.asList(new Circle(2.0), new Circle(3.0));
+
+        List<Rectangle> rectangles = Arrays.asList(new Rectangle(2, 5), new Rectangle(3, 4));
+
+        System.out.println("Загальна площа кіл: " + ShapeCalculator.calculateTotalArea(circles));
+        System.out.println("Загальна площа прямокутників: " + ShapeCalculator.calculateTotalArea(rectangles));
+    }
 }
