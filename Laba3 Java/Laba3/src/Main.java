@@ -35,4 +35,20 @@ class StudentRegistry {
         }
     }
 
+    public void findStudent(int studentId) {
+        Student found = registry.get(studentId);
+        if (found != null) {
+            System.out.println("Знайдено: " + found);
+        } else {
+            System.out.println("Студента з ID " + studentId + " не існує.");
+        }
+    }
+
+    public void displayAllStudents() {
+        System.out.println("--- Список усіх студентів ---");
+        // Перебираємо всі значення (values) у нашому реєстрі
+        for (Student s : registry.values()) {
+            System.out.println(s);
+        }
+    }
 }
