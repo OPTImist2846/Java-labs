@@ -52,9 +52,9 @@ public class Main {
         System.out.println("Завдання 9: " + StreamTasks.task9(productMap));
 
         // 10
-        Map<String, List<Double>> temps = new HashMap<>();
-        temps.put("Київ", Arrays.asList(20.0, 22.0, 21.0)); // Середня ~21
-        temps.put("Одеса", Arrays.asList(25.0, 26.0, 27.0)); // Середня ~26
+        Map<String, List<Integer>> temps = new HashMap<>();
+        temps.put("Київ", Arrays.asList(20, 22, 21));
+        temps.put("Одеса", Arrays.asList(25, 26, 27));
         System.out.println("Завдання 10: " + StreamTasks.task10(temps));
     }
 }

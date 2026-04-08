@@ -64,7 +64,7 @@ public class StreamTasks {
 
     public static Optional<String> task8(List<Product> products) {
         return products.stream()
-                .sorted(Comparator.comparingDouble(Product::getPrice).reversed()) // Сортуємо від найдорожчого
+                .sorted(Comparator.comparingDouble(Product::getPrice).reversed())
                 .skip(1)
                 .findFirst()
                 .map(Product::getName);
@@ -78,11 +78,11 @@ public class StreamTasks {
                 .collect(Collectors.toList());
     }
 
-    public static Optional<String> task10(Map<String, List<Double>> cityTemperatures) {
+    public static Optional<String> task10(Map<String, List<Integer>> cityTemperatures) {
         return cityTemperatures.entrySet().stream()
                 .max(Comparator.comparingDouble(entry ->
                         entry.getValue().stream()
-                                .mapToDouble(Double::doubleValue)
+                                .mapToInt(Integer::intValue)
                                 .average()
                                 .orElse(0.0)
                 ))
