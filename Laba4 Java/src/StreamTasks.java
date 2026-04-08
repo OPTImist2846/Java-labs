@@ -21,4 +21,18 @@ public class StreamTasks {
         return names.stream()
                 .max(Comparator.comparingInt(String::length));
     }
+
+    public static Map<String, Employee> task4(List<Employee> employees) {
+        return employees.stream().collect(Collectors.groupingBy(
+                e -> {
+                    if (e.getSalary() < 3000) return "< 3000";
+                    else if (e.getSalary() <= 5000) return "3000-5000";
+                    else return "> 5000";
+                },
+                Collectors.collectingAndThen(
+                        Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary)),
+                        Optional::get // Дістаємо Employee з Optional
+                )
+        ));
+    }
 }
