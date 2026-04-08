@@ -52,12 +52,14 @@ public class StreamTasks {
     }
 
     public static Map<String, Double> task7(List<Transaction> transactions) {
-        return transactions.stream().collect(
-                Collectors.groupingBy(
-                        Transaction::getCategory,
-                        Collectors.summingDouble(Transaction::getAmount)
-                )
-        );
+        return transactions.stream()
+
+                .filter(t -> t.getCategory() != null && !t.getCategory().isEmpty())
+
+                .collect(Collectors.groupingBy(
+                        t -> t.getCategory(),
+                        Collectors.summingDouble(t -> t.getAmount())
+                ));
     }
 
     public static Optional<String> task8(List<Product> products) {
