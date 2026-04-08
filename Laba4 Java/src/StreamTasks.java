@@ -50,4 +50,13 @@ public class StreamTasks {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    public static Map<String, Double> task7(List<Transaction> transactions) {
+        return transactions.stream().collect(
+                Collectors.groupingBy(
+                        Transaction::getCategory,
+                        Collectors.summingDouble(Transaction::getAmount)
+                )
+        );
+    }
 }
