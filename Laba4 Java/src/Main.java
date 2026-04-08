@@ -2,9 +2,7 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("=== ЛАБОРАТОРНА РОБОТА 4 (Stream API) ===\n");
-
-        // 1
+            // 1
         List<String> strings = Arrays.asList("Apple", "Xenomorph", "Banana", "X-ray");
         System.out.println("Завдання 1: " + StreamTasks.task1(strings));
 
