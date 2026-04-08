@@ -31,7 +31,7 @@ public class StreamTasks {
                 },
                 Collectors.collectingAndThen(
                         Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary)),
-                        Optional::get // Дістаємо Employee з Optional
+                        Optional::get
                 )
         ));
     }
@@ -39,6 +39,15 @@ public class StreamTasks {
     public static Optional<Integer> task5(List<Integer> numbers) {
         return numbers.stream()
                 .filter(n -> n % 2 != 0)
-                .reduce((a, b) -> a * b); // Множимо числа одне на одне
+                .reduce((a, b) -> a * b);
+    }
+
+    public static List<String> task6(List<Person> persons) {
+        return persons.stream()
+                .flatMap(p -> p.getFriends().stream())
+                .map(Person::getName)
+                .map(String::toUpperCase)
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
