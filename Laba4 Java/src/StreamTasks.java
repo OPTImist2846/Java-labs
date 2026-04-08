@@ -35,4 +35,10 @@ public class StreamTasks {
                 )
         ));
     }
+
+    public static Optional<Integer> task5(List<Integer> numbers) {
+        return numbers.stream()
+                .filter(n -> n % 2 != 0)
+                .reduce((a, b) -> a * b); // Множимо числа одне на одне
+    }
 }
