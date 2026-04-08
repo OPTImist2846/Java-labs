@@ -63,8 +63,16 @@ public class StreamTasks {
     public static Optional<String> task8(List<Product> products) {
         return products.stream()
                 .sorted(Comparator.comparingDouble(Product::getPrice).reversed()) // Сортуємо від найдорожчого
-                .skip(1) // Пропускаємо найдорожчий (перший)
-                .findFirst() // Беремо другий
+                .skip(1)
+                .findFirst()
                 .map(Product::getName);
+    }
+
+    public static List<String> task9(Map<Integer, Optional<String>> map) {
+        return map.values().stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(String::toUpperCase)
+                .collect(Collectors.toList());
     }
 }
