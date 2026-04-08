@@ -16,4 +16,9 @@ public class StreamTasks {
                 .map(Optional::get)
                 .collect(Collectors.toList());
     }
+
+    public static Optional<String> task3(List<String> names) {
+        return names.stream()
+                .max(Comparator.comparingInt(String::length));
+    }
 }
