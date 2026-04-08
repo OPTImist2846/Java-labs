@@ -75,4 +75,15 @@ public class StreamTasks {
                 .map(String::toUpperCase)
                 .collect(Collectors.toList());
     }
+
+    public static Optional<String> task10(Map<String, List<Double>> cityTemperatures) {
+        return cityTemperatures.entrySet().stream()
+                .max(Comparator.comparingDouble(entry ->
+                        entry.getValue().stream()
+                                .mapToDouble(Double::doubleValue)
+                                .average()
+                                .orElse(0.0)
+                ))
+                .map(Map.Entry::getKey);
+    }
 }
