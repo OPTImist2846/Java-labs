@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StreamTasks {
 
@@ -9,5 +10,10 @@ public class StreamTasks {
                 .orElse("Default"));
     }
 
-
+    public static List<Integer> task2(List<Optional<Integer>> optionals) {
+        return optionals.stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
 }
