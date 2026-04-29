@@ -3,28 +3,27 @@ import java.util.Map;
 
 public class Main {
 
-    // Допоміжний об'єкт для демонстрації wait() та notifyAll() (Вимоги 13, 16)
     static class BankStatus {
         private boolean isOpen = false;
 
-        // Метод, де потоки чекають на відкриття банку
+        // Метод очікування
         public synchronized void waitForOpen() throws InterruptedException {
             while (!isOpen) {
                 System.out.println(Thread.currentThread().getName() + " чекає на відкриття банку...");
-                wait(); // 16. wait(): Потік засинає і віддає монітор
+                wait();
             }
         }
 
-        // Метод, який будить всі потоки
+        // Будить всі потоки
         public synchronized void openBank() {
             isOpen = true;
             System.out.println(" БАНК ВІДКРИТО! Починаєм роботу.");
-            notifyAll(); // 16. notifyAll(): Будить всі потоки, які викликали wait()
+            notifyAll();
         }
     }
 
     public static void main(String[] args) throws InterruptedException {
-        // Створюємо рахунки
+        // Створення рахунків
         Account acc1 = new Account("1", "Клієнт А", 5000);
         Account acc2 = new Account("2", "Клієнт Б", 3000);
 
@@ -35,16 +34,16 @@ public class Main {
         Bank bank = new Bank(accountMap);
         BankStatus bankStatus = new BankStatus();
 
-        // 1. Створення потоків (через інтерфейс Runnable)
+        // Створення потоків
         Runnable clientTask1 = () -> {
             try {
-                bankStatus.waitForOpen(); // Чекаємо, поки банк відкриється
+                bankStatus.waitForOpen();
 
                 acc1.withdraw(1000);
                 bank.transfer("1", "2", 1500);
 
             } catch (InterruptedException e) {
-                // 2. Обробка примусової зупинки
+                // Примусова зупинка
                 System.out.println("Потік " + Thread.currentThread().getName() + " був примусово перерваний!");
             }
         };
@@ -61,22 +60,20 @@ public class Main {
             }
         };
 
-        // Створюємо об'єкти Thread на основі Runnable
         Thread thread1 = new Thread(clientTask1);
         Thread thread2 = new Thread(clientTask2);
 
-        // 4. Властивості потоків (назва, пріоритет)
         thread1.setName("Потік-Клієнт-А");
         thread2.setName("Потік-Клієнт-Б");
 
-        thread1.setPriority(Thread.MAX_PRIORITY); // Найвищий пріоритет (10)
-        thread2.setPriority(Thread.NORM_PRIORITY); // Стандартний пріоритет (5)
+        thread1.setPriority(Thread.MAX_PRIORITY);
+        thread2.setPriority(Thread.NORM_PRIORITY);
 
         // Фоновий потік для аудиту банку
         Thread auditThread = new Thread(() -> {
             try {
                 while (!Thread.currentThread().isInterrupted()) {
-                    Thread.sleep(50); // Робимо аудит кожні 50 мс
+                    Thread.sleep(50);
                     bank.printTotalBankBalance();
                 }
             } catch (InterruptedException e) {
@@ -84,9 +81,9 @@ public class Main {
             }
         });
         auditThread.setName("Потік-Аудит");
-        auditThread.setDaemon(true); // Робимо його фоновим
+        auditThread.setDaemon(true);
 
-        // Запускаємо всі потоки (вони зараз застрягнуть на wait(), бо банк зачинено)
+        // Запускаємо всі потоки
         thread1.start();
         thread2.start();
         auditThread.start();
@@ -94,14 +91,14 @@ public class Main {
         // Імітуємо підготовку банку до відкриття
         Thread.sleep(1000);
 
-        // Відкриваємо банк (це викличе notifyAll() і розбудить Клієнтів А і Б)
+        // Відкриваємо банк
         bankStatus.openBank();
 
-        // 5. Координація потоків: Головний потік (Main) чекає завершення роботи клієнтів
+        // Main чекає завершення роботи клієнтів
         thread1.join();
         thread2.join();
 
-        // 2. Примусова зупинка потоків: Зупиняємо аудит, бо клієнти вже все закінчили
+        // Примусова зупинка потоків
         auditThread.interrupt();
 
         System.out.println(" Робочий день банку завершено.");
