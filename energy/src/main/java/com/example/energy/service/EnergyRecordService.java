@@ -18,7 +18,7 @@ public class EnergyRecordService {
 
     public EnergyRecord create(EnergyRecord item) {
         if (item.getId() == null) item.setId(UUID.randomUUID().toString());
-        if (item.getTimestamp() == null) item.setTimestamp(LocalDateTime.now()); // Автоматично ставимо час
+        if (item.getTimestamp() == null) item.setTimestamp(LocalDateTime.now());
         return repository.save(item);
     }
 
