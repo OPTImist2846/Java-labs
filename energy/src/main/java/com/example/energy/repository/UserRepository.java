@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class UserRepository {
-    // Наша імпровізована база даних у пам'яті
+
     private final Map<String, User> users = new ConcurrentHashMap<>();
 
     public List<User> findAll() {

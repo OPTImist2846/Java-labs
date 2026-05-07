@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class Device {
     private String id;
     private String modelName;
-    private String facilityId; // ID будинку/квартири
+    private String facilityId;
 }

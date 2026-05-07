@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class EnergyRecord {
     private String id;
-    private String deviceId; // ID лічильника
-    private double consumedKwh; // Скільки кіловат спожито
-    private LocalDateTime timestamp; // Час фіксації
+    private String deviceId;
+    private double consumedKwh;
+    private LocalDateTime timestamp;
 }
