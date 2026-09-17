@@ -1,4 +1,4 @@
-package entity;
+package com.example.fpvfleet.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

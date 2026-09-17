@@ -1,15 +1,15 @@
-package entity;
+package com.example.fpvfleet.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "equipment")
+@Table(name = "drones")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Equipment {
+public class Drone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,8 +17,7 @@ public class Equipment {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String type;
+    private String frameSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pilot_id", nullable = false)
