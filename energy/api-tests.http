@@ -1,0 +1,8 @@
+### Створення нового об'єкта
+POST http://localhost:8080/api/facilities
+Content-Type: application/json
+
+{
+  "address": "вул. Кобилянської, 45",
+  "userId": "user-123"
+}

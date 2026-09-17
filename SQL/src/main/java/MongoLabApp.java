@@ -7,17 +7,14 @@ import java.util.Arrays;
 
 public class MongoLabApp {
 
-    // ТУТ ВСТАВ СВІЙ РЯДОК ПІДКЛЮЧЕННЯ З ATLAS (з паролем)
-    private static final String CONNECTION_URI = "mongodb+srv://OPTImist:ТВІЙ_ПАРОЛЬ@cluster0.tmr3l6f.mongodb.net/";
+    private static final String CONNECTION_URI = "mongodb+srv://OPTImist:OPTImist2846@cluster0.tmr3l6f.mongodb.net/";
     private static final String DATABASE_NAME = "sales_department_db";
 
     public static void main(String[] args) {
-        // Підключаємось до кластера
         try (MongoClient mongoClient = MongoClients.create(CONNECTION_URI)) {
             MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
             System.out.println("✅ Успішно підключено до бази: " + database.getName() + "\n");
 
-            // Виконуємо наші методи
             runSelectors(database);
             runAggregations(database);
 
@@ -27,14 +24,13 @@ public class MongoLabApp {
     }
 
     /**
-     * 1. СЕЛЕКТОРИ (Вибірка та видалення)
+     * 1. СЕЛЕКТОРИ
      */
     private static void runSelectors(MongoDatabase db) {
-        System.out.println("================ СЕЛЕКТОРИ ================");
+        System.out.println(" СЕЛЕКТОРИ ");
         MongoCollection<Document> products = db.getCollection("products");
         MongoCollection<Document> employees = db.getCollection("employees");
 
-        // Селектор 1: Знайти товари, ціна яких >= 200 і < 1000
         System.out.println("\n--- Товари з ціною від 200 до 1000 ---");
         Bson priceFilter = Filters.and(Filters.gte("price", 200), Filters.lt("price", 1000));
 
@@ -42,7 +38,6 @@ public class MongoLabApp {
             System.out.println(doc.toJson());
         }
 
-        // Селектор 2: Працівники, які є Менеджерами або Старшими менеджерами
         System.out.println("\n--- Менеджери та Старші менеджери ---");
         Bson positionFilter = Filters.or(
                 Filters.eq("details.position", "Менеджер"),
@@ -52,7 +47,6 @@ public class MongoLabApp {
             System.out.println(doc.toJson());
         }
 
-        // Видалення: Видалити товари, яких немає на складі (stock_balance = 0)
         System.out.println("\n--- Видалення товарів із залишком 0 ---");
         products.deleteMany(Filters.eq("stock_balance", 0));
         System.out.println("Операція видалення виконана.");
@@ -77,7 +71,7 @@ public class MongoLabApp {
                 Aggregates.limit(3) // Залишаємо топ 3
         )).forEach(doc -> System.out.println(doc.toJson()));
 
-        // Агрегація 2: Статистика цін за категоріями (одиницями виміру)
+        // Агрегація 2: Статистика цін за категоріями
         System.out.println("\n--- Статистика цін за одиницями виміру ---");
         products.aggregate(Arrays.asList(
                 Aggregates.match(Filters.gt("stock_balance", 0)),
