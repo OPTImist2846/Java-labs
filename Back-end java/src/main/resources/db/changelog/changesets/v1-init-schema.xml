@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="oleksii">
+        <!-- Таблиця Pilots -->
+        <createTable tableName="pilots">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="role" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Таблиця Drones -->
+        <createTable tableName="drones">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="frame_size" type="VARCHAR(255)"/>
+            <column name="pilot_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="drones" baseColumnNames="pilot_id"
+                                 constraintName="fk_drones_pilot_id"
+                                 referencedTableName="pilots" referencedColumnNames="id"/>
+
+        <!-- Таблиця Equipment -->
+        <createTable tableName="equipment">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pilot_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="equipment" baseColumnNames="pilot_id"
+                                 constraintName="fk_equipment_pilot_id"
+                                 referencedTableName="pilots" referencedColumnNames="id"/>
+
+        <!-- Таблиця Flight Logs -->
+        <createTable tableName="flight_logs">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="environment" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration_minutes" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="flight_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notes" type="VARCHAR(500)"/>
+            <column name="pilot_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="drone_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="flight_logs" baseColumnNames="pilot_id"
+                                 constraintName="fk_flight_logs_pilot_id"
+                                 referencedTableName="pilots" referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="flight_logs" baseColumnNames="drone_id"
+                                 constraintName="fk_flight_logs_drone_id"
+                                 referencedTableName="drones" referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>
