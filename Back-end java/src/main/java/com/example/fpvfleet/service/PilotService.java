@@ -6,6 +6,7 @@ import com.example.fpvfleet.exception.ResourceNotFoundException;
 import com.example.fpvfleet.mapper.PilotMapper;
 import com.example.fpvfleet.repository.PilotRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ public class PilotService {
     private final PilotMapper pilotMapper;
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public List<PilotDto> getAllPilots() {
         return pilotRepository.findAll().stream()
                 .map(pilotMapper::toDto)
@@ -26,11 +28,13 @@ public class PilotService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public PilotDto getPilotById(Long id) {
         return pilotMapper.toDto(findPilot(id));
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public PilotDto createPilot(PilotDto pilotDto) {
         if (pilotRepository.findByUsername(pilotDto.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Пілот з таким username вже існує");
@@ -41,6 +45,7 @@ public class PilotService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public PilotDto updatePilot(Long id, PilotDto pilotDto) {
         Pilot pilot = findPilot(id);
         pilotRepository.findByUsername(pilotDto.getUsername())
@@ -53,6 +58,7 @@ public class PilotService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deletePilot(Long id) {
         pilotRepository.delete(findPilot(id));
     }

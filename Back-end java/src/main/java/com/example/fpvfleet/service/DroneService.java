@@ -8,6 +8,7 @@ import com.example.fpvfleet.mapper.DroneMapper;
 import com.example.fpvfleet.repository.DroneRepository;
 import com.example.fpvfleet.repository.PilotRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class DroneService {
     private final DroneMapper droneMapper;
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public List<DroneDto> getAllDrones() {
         return droneRepository.findAll().stream()
                 .map(droneMapper::toDto)
@@ -29,11 +31,13 @@ public class DroneService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public DroneDto getDroneById(Long id) {
         return droneMapper.toDto(findDrone(id));
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public List<DroneDto> getDronesByPilotId(Long pilotId) {
         return droneRepository.findAllByPilotId(pilotId).stream()
                 .map(droneMapper::toDto)
@@ -41,6 +45,7 @@ public class DroneService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public DroneDto createDrone(DroneDto droneDto) {
         Drone drone = droneMapper.toEntity(droneDto);
         drone.setId(null);
@@ -49,6 +54,7 @@ public class DroneService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public DroneDto updateDrone(Long id, DroneDto droneDto) {
         Drone drone = findDrone(id);
         droneMapper.updateEntity(droneDto, drone);
@@ -57,6 +63,7 @@ public class DroneService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteDrone(Long id) {
         droneRepository.delete(findDrone(id));
     }

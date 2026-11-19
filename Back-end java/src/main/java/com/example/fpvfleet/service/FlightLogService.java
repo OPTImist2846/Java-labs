@@ -10,6 +10,7 @@ import com.example.fpvfleet.repository.DroneRepository;
 import com.example.fpvfleet.repository.FlightLogRepository;
 import com.example.fpvfleet.repository.PilotRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class FlightLogService {
     private final FlightLogMapper flightLogMapper;
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public List<FlightLogDto> getAllLogs() {
         return flightLogRepository.findAll().stream()
                 .map(flightLogMapper::toDto)
@@ -32,11 +34,13 @@ public class FlightLogService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public FlightLogDto getLogById(Long id) {
         return flightLogMapper.toDto(findLog(id));
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public FlightLogDto createLog(FlightLogDto flightLogDto) {
         FlightLog log = flightLogMapper.toEntity(flightLogDto);
         log.setId(null);
@@ -46,6 +50,7 @@ public class FlightLogService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public FlightLogDto updateLog(Long id, FlightLogDto flightLogDto) {
         FlightLog log = findLog(id);
         flightLogMapper.updateEntity(flightLogDto, log);
@@ -55,6 +60,7 @@ public class FlightLogService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteLog(Long id) {
         flightLogRepository.delete(findLog(id));
     }

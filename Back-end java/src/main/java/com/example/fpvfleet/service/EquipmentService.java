@@ -8,6 +8,7 @@ import com.example.fpvfleet.mapper.EquipmentMapper;
 import com.example.fpvfleet.repository.EquipmentRepository;
 import com.example.fpvfleet.repository.PilotRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class EquipmentService {
     private final EquipmentMapper equipmentMapper;
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public List<EquipmentDto> getAllEquipment() {
         return equipmentRepository.findAll().stream()
                 .map(equipmentMapper::toDto)
@@ -29,11 +31,13 @@ public class EquipmentService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public EquipmentDto getEquipmentById(Long id) {
         return equipmentMapper.toDto(findEquipment(id));
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public List<EquipmentDto> getEquipmentByPilotId(Long pilotId) {
         return equipmentRepository.findAllByPilotId(pilotId).stream()
                 .map(equipmentMapper::toDto)
@@ -41,6 +45,7 @@ public class EquipmentService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public EquipmentDto createEquipment(EquipmentDto equipmentDto) {
         Equipment equipment = equipmentMapper.toEntity(equipmentDto);
         equipment.setId(null);
@@ -49,6 +54,7 @@ public class EquipmentService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public EquipmentDto updateEquipment(Long id, EquipmentDto equipmentDto) {
         Equipment equipment = findEquipment(id);
         equipmentMapper.updateEntity(equipmentDto, equipment);
@@ -57,6 +63,7 @@ public class EquipmentService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteEquipment(Long id) {
         equipmentRepository.delete(findEquipment(id));
     }
