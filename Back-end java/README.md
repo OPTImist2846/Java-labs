@@ -1,31 +1,55 @@
 # FPV Fleet
 
-Система обліку FPV-пілотів, їхніх дронів, обладнання та журналів польотів.
-Лабораторна робота №1 — Spring Security (OIDC + JWT).
+Семестровий проєкт з back-end розробки на Java: система обліку FPV-пілотів, їхніх дронів,
+обладнання та журналів польотів. Кожна лабораторна робота нарощує функціональність
+на основі попередньої.
+
+## Зміст
+
+| №  | Тема                          | Звіт                                            |
+|----|-------------------------------|-------------------------------------------------|
+| 1  | Spring Security (OIDC + JWT)  | [Лабораторна робота №1](#лабораторна-робота-1)  |
+
+## Предметна область
+
+Система призначена для команди або школи FPV-пілотування: облік пілотів, парку дронів,
+персонального обладнання (окуляри, апаратура, акумулятори) та польотів.
+
+Предметну область обрано з розрахунком на розвиток у багатомодульну систему:
+- **облік флоту** — дрони, комплектуючі, обслуговування та ремонти;
+- **польоти** — журнали, налітані години, статистика пілотів;
+- **навчання** — інструктори, тренування, допуски;
+- **інтеграції** — імпорт телеметрії та сповіщення.
+
+Поточна модель даних:
+
+| Сутність    | Поля                                                          | Зв'язки                         |
+|-------------|---------------------------------------------------------------|---------------------------------|
+| `Pilot`     | `username`, `email`, `role`                                   | має дрони, обладнання, журнали  |
+| `Drone`     | `name`, `frameSize`                                           | належить пілоту                 |
+| `Equipment` | `name`, `type`                                                | належить пілоту                 |
+| `FlightLog` | `environment`, `durationMinutes`, `flightDate`, `notes`       | пілот (обов'язково), дрон (опційно) |
 
 ## Стек
 
-Spring Boot 4, Spring Data JPA + Hibernate, MySQL, Liquibase, MapStruct, Lombok,
-Spring Security (OAuth2 Client + Resource Server), Keycloak 24, Thymeleaf.
+Java 17, Spring Boot 4, Spring Data JPA + Hibernate, MySQL, Liquibase, MapStruct, Lombok,
+Spring Security (OAuth2 Client + Resource Server), Keycloak 24, Thymeleaf, Docker Compose.
 
 ## Запуск
 
 1. MySQL на `localhost:3306` (користувач `root` / `root`, база `fpv_fleet` створюється автоматично).
-2. Keycloak з автоімпортом realm `fpv-fleet`:
+2. Keycloak з автоматичним імпортом realm `fpv-fleet`:
    ```
    docker compose up -d
    ```
    Адмінка Keycloak: http://localhost:8081 (`admin` / `admin`).
-3. Застосунок (JDK 17+):
+3. Застосунок (JDK 17+, Keycloak має бути вже запущений):
    ```
    ./mvnw spring-boot:run
    ```
    UI: http://localhost:8080
 
-Схема БД створюється Liquibase-changelog'ами з `src/main/resources/db/changelog`
-(`ddl-auto: validate`, Hibernate схему не змінює).
-
-## Користувачі Keycloak
+### Користувачі Keycloak
 
 | Логін    | Пароль   | Ролі         |
 |----------|----------|--------------|
@@ -33,49 +57,150 @@ Spring Security (OAuth2 Client + Resource Server), Keycloak 24, Thymeleaf.
 | `pilot`  | `pilot`  | PILOT        |
 | `viewer` | `viewer` | —            |
 
-Клієнти: `fpv-ui` (confidential, authorization code — для UI),
-`fpv-cli` (public, password grant — для отримання JWT у curl / HTTP-клієнті).
-Ролі realm передаються у claim `roles` і мапляться на `ROLE_*`.
+---
 
-## Безпека
+## Лабораторна робота №1
 
-Два `SecurityFilterChain` у `SecurityConfig`:
+**Тема:** Spring Security.
 
-| Ланцюг | Шляхи        | Автентифікація                     | Сесія     |
-|--------|--------------|------------------------------------|-----------|
-| API    | `/api/**`    | JWT `Authorization: Bearer <token>` | stateless |
-| UI     | решта        | OIDC login через Keycloak          | HTTP-сесія |
+**Мета:** закласти технічний фундамент системи — предметну область, базовий CRUD,
+базу даних під контролем міграцій, простий UI та подвійну модель автентифікації
+(OIDC для UI-користувачів і JWT для прямих API-запитів).
 
-Обмеження на рівні `SecurityFilterChain` (API):
-- `DELETE /api/**` — лише `ADMIN`;
-- `POST/PUT /api/v1/pilots/**` — лише `ADMIN`;
-- решта — будь-який автентифікований користувач.
+### Що зроблено
 
-Обмеження через `@PreAuthorize` (методи сервісів, діють і для API, і для UI):
-- читання та створення/редагування дронів, обладнання, журналів — `ADMIN` або `PILOT`;
-- створення/редагування/видалення пілотів і будь-яке видалення — `ADMIN`.
+#### 1. Базовий CRUD (AC1)
 
-Тому `viewer` проходить фільтр (`authenticated`), але отримує 403 від `@PreAuthorize`.
+Для кожної з чотирьох сутностей реалізовано шари `Entity → Repository → Service → RestController`
+з DTO та мапінгом через MapStruct (пакети `entity`, `repository`, `service`, `controller`, `dto`, `mapper`).
 
-## REST API
+| Ресурс     | Ендпоінти                                                                                         |
+|------------|---------------------------------------------------------------------------------------------------|
+| Пілоти     | `GET/POST /api/v1/pilots`, `GET/PUT/DELETE /api/v1/pilots/{id}`                                   |
+| Дрони      | `GET/POST /api/v1/drones`, `GET/PUT/DELETE /api/v1/drones/{id}`, `GET /api/v1/drones/pilot/{pilotId}` |
+| Обладнання | `GET/POST /api/v1/equipment`, `GET/PUT/DELETE /api/v1/equipment/{id}`, `GET /api/v1/equipment/pilot/{pilotId}` |
+| Журнали    | `GET/POST /api/v1/flight-logs`, `GET/PUT/DELETE /api/v1/flight-logs/{id}`                         |
 
-| Ресурс        | Ендпоінти                                                            |
-|---------------|----------------------------------------------------------------------|
-| Пілоти        | `GET/POST /api/v1/pilots`, `GET/PUT/DELETE /api/v1/pilots/{id}`      |
-| Дрони         | `GET/POST /api/v1/drones`, `GET/PUT/DELETE /api/v1/drones/{id}`, `GET /api/v1/drones/pilot/{pilotId}` |
-| Обладнання    | `GET/POST /api/v1/equipment`, `GET/PUT/DELETE /api/v1/equipment/{id}`, `GET /api/v1/equipment/pilot/{pilotId}` |
-| Журнали       | `GET/POST /api/v1/flight-logs`, `GET/PUT/DELETE /api/v1/flight-logs/{id}` |
+- MapStruct-мапери мають методи `toDto`, `toEntity` та `updateEntity` (`@MappingTarget`) для оновлення.
+- Зв'язки з пілотом і дроном сервіси підтягують з репозиторіїв, тому неіснуючий `pilotId`
+  чи `droneId` дає 404, а не помилку бази.
+- `GlobalExceptionHandler` повертає єдиний формат помилки (`ErrorResponse`):
+  404 — запис не знайдено, 400 — некоректні дані, 409 — порушення цілісності, 403 — недостатньо прав.
 
-## Колекція запитів для захисту
+#### 2. Міграції бази даних (AC2)
 
-`http/fpv-fleet.http` (IntelliJ HTTP Client, оточення `dev` з `http/http-client.env.json`).
-Запустити весь файл: отримує токени трьох користувачів, проходить повний CRUD,
-демонструє 401, 403 від `SecurityFilterChain`, 403 від `@PreAuthorize` та 404.
-Кожен запит має перевірку очікуваного статусу.
+Схема створюється тільки Liquibase, Hibernate працює в режимі `ddl-auto: validate`.
 
-## Демонстрація OIDC
+| Changeset | Файл                                         | Зміст                                                         |
+|-----------|----------------------------------------------|---------------------------------------------------------------|
+| 1         | `changesets/v1-init-schema.xml`              | таблиці `pilots`, `drones`, `equipment`, `flight_logs` та зовнішні ключі |
+| 2         | `changesets/v2-flight-log-drone-set-null.xml`| `ON DELETE SET NULL` для `flight_logs.drone_id`: при видаленні дрона журнал польоту зберігається |
 
-1. Відкрити http://localhost:8080/ui — редирект на сторінку логіну Keycloak.
-2. Увійти як `admin` — повернення в застосунок з сесією, у шапці видно ролі.
-3. Увійти як `viewer` і відкрити «Дрони» — сторінка 403 від `@PreAuthorize`.
-4. «Вийти» — logout із сесії застосунку та Keycloak.
+Головний changelog: `src/main/resources/db/changelog/db.changelog-master.xml`.
+На чистій базі обидва changeset'и застосовуються автоматично під час старту.
+
+#### 3. Інтерфейс користувача (AC3)
+
+Серверний UI на Thymeleaf (пакет `ui`, шаблони в `src/main/resources/templates`):
+- `/` — головна сторінка, доступна без входу;
+- `/ui` — панель з даними користувача, його ролями та таблицею прав;
+- `/ui/pilots`, `/ui/drones`, `/ui/equipment`, `/ui/flight-logs` — список, створення,
+  редагування та видалення записів.
+
+UI викликає ті самі сервіси, що й REST API, тому правила `@PreAuthorize` діють і тут:
+відмова в доступі показує сторінку 403, помилки бізнес-логіки показуються повідомленням.
+
+#### 4. Keycloak
+
+Realm `fpv-fleet` (`keycloak/fpv-fleet-realm.json`) імпортується автоматично під час старту контейнера:
+- ролі realm `ADMIN` і `PILOT`;
+- клієнт `fpv-ui` — confidential, authorization code flow, для входу через UI;
+- клієнт `fpv-cli` — public, password grant, для отримання JWT у curl / Postman / HTTP-клієнті;
+- mapper `realm-roles` кладе ролі в claim `roles` у ID token, access token та userinfo.
+
+#### 5. Подвійна автентифікація (AC4, AC5)
+
+`SecurityConfig` містить два незалежні `SecurityFilterChain`:
+
+| Ланцюг | `@Order` | Шляхи     | Автентифікація                       | Сесія      | CSRF     |
+|--------|----------|-----------|--------------------------------------|------------|----------|
+| API    | 1        | `/api/**` | JWT, `Authorization: Bearer <token>` | stateless  | вимкнено |
+| UI     | 2        | решта     | OIDC login через Keycloak            | HTTP-сесія | увімкнено |
+
+- **OIDC:** неавтентифікований користувач на `/ui/**` перенаправляється на сторінку логіну Keycloak,
+  після входу повертається в застосунок із сесією. Вихід виконує RP-initiated logout
+  (сесія завершується і в застосунку, і в Keycloak).
+- **JWT:** токен перевіряється за `issuer-uri` Keycloak; без токена або з невалідним токеном — 401.
+- В обох потоках claim `roles` перетворюється на authorities `ROLE_*`
+  (`JwtAuthenticationConverter` для API, власний `OidcUserService` для UI).
+
+#### 6. Обмеження доступу (AC6, AC7)
+
+Доступ обмежується на двох рівнях.
+
+**SecurityFilterChain** (API):
+
+| Правило                              | Доступ               |
+|--------------------------------------|----------------------|
+| `GET /api/**`                        | будь-хто автентифікований |
+| `DELETE /api/**`                     | лише `ADMIN`         |
+| `POST/PUT /api/v1/pilots/**`         | лише `ADMIN`         |
+| решта `/api/**`                      | будь-хто автентифікований |
+
+**`@PreAuthorize`** на методах сервісів (`@EnableMethodSecurity`):
+
+| Операція                                                     | Доступ            |
+|--------------------------------------------------------------|-------------------|
+| Читання будь-яких даних                                      | `ADMIN` або `PILOT` |
+| Створення / оновлення дронів, обладнання, журналів           | `ADMIN` або `PILOT` |
+| Створення / оновлення / видалення пілотів                    | `ADMIN`           |
+| Видалення дронів, обладнання, журналів                       | `ADMIN`           |
+
+Незалежність рівнів показує користувач `viewer`: він автентифікований, тому
+`SecurityFilterChain` пропускає `GET /api/v1/drones`, але метод сервісу кидає
+`AccessDeniedException` і клієнт отримує 403.
+
+#### 7. Колекція HTTP-запитів (AC8)
+
+`http/fpv-fleet.http` для IntelliJ HTTP Client (оточення `dev` з `http/http-client.env.json`).
+Файл запускається цілком і проходить сценарій по порядку; токени та ідентифікатори
+передаються між запитами автоматично, кожен запит перевіряє очікуваний статус.
+
+| Блок | Сценарій                                                        | Очікуваний результат |
+|------|-----------------------------------------------------------------|----------------------|
+| 1    | Отримання токенів `admin`, `pilot`, `viewer`                    | 200                  |
+| 2    | Запит без токена та з невалідним токеном                        | 401                  |
+| 3–6  | CRUD пілотів, дронів, обладнання, журналів                      | 201 / 200            |
+| 7    | `pilot` створює пілота та видаляє дрон                          | 403 від SecurityFilterChain |
+| 8    | `viewer` читає дрони та створює журнал                          | 403 від `@PreAuthorize` |
+| 9    | Неіснуючий дрон / пілот                                         | 404                  |
+| 10   | Видалення всіх створених записів, перевірка `droneId = null`    | 204 / 200 / 404      |
+
+### Відповідність критеріям прийнятності
+
+| AC | Критерій                               | Де реалізовано                                    | Як перевірити                              |
+|----|----------------------------------------|---------------------------------------------------|--------------------------------------------|
+| 1  | CRUD працює, мапінг через MapStruct    | `controller`, `service`, `mapper`                 | блоки 3–6 і 10 колекції                    |
+| 2  | Схема керується міграціями             | `db/changelog`, `ddl-auto: validate`              | старт на порожній базі, таблиця `DATABASECHANGELOG` |
+| 3  | UI виконує CRUD-сценарії               | пакет `ui`, `templates`                           | http://localhost:8080/ui                   |
+| 4  | OIDC-вхід через Keycloak               | `SecurityConfig#uiSecurityFilterChain`            | відкрити `/ui` → логін Keycloak → повернення |
+| 5  | JWT для API без сесії                  | `SecurityConfig#apiSecurityFilterChain`           | блоки 1–2 колекції                         |
+| 6  | 403 від SecurityFilterChain            | правила `hasRole("ADMIN")` в API-ланцюгу          | блок 7 колекції                            |
+| 7  | 403 від `@PreAuthorize`                | анотації в `service`                              | блок 8 колекції; вхід як `viewer` в UI     |
+| 8  | Готова колекція запитів                | `http/fpv-fleet.http`                             | запуск усього файлу в IntelliJ             |
+
+### Демонстрація на захисті
+
+1. `docker compose up -d`, потім `./mvnw spring-boot:run`.
+2. Відкрити http://localhost:8080/ui — редирект на логін Keycloak.
+3. Увійти як `admin` — повернення в застосунок, у шапці ролі `ADMIN` і `PILOT`; створити, змінити й видалити запис.
+4. Вийти, увійти як `viewer`, відкрити «Дрони» — сторінка 403 від `@PreAuthorize`.
+5. Запустити `http/fpv-fleet.http` цілком — усі перевірки зелені.
+
+### Висновок
+
+Створено основу семестрового проєкту: REST API з повним CRUD на стандартному стеку
+Spring Boot, схему бази під керуванням Liquibase та простий UI. Spring Security налаштовано
+з двома паралельними способами автентифікації через Keycloak: OIDC із сесією для браузера
+і stateless JWT для API. Обмеження доступу показано на двох незалежних рівнях:
+правилами URL у `SecurityFilterChain` та `@PreAuthorize` на методах сервісів.
