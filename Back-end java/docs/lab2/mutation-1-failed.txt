@@ -1,0 +1,7 @@
+[ERROR] Tests run: 21, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.568 s <<< FAILURE! -- in com.example.fpvfleet.service.FlightLogServiceTest
+[ERROR] com.example.fpvfleet.service.FlightLogServiceTest.createLog_nonPositiveDuration_throwsAndDoesNotSave(Integer)[2] -- Time elapsed: 0.039 s <<< FAILURE!
+Expecting actual throwable to be an instance of:
+	at com.example.fpvfleet.service.FlightLogServiceTest.createLog_nonPositiveDuration_throwsAndDoesNotSave(FlightLogServiceTest.java:168)
+[ERROR]   FlightLogServiceTest.createLog_nonPositiveDuration_throwsAndDoesNotSave:168 
+Expecting actual throwable to be an instance of:
+[ERROR] Tests run: 21, Failures: 1, Errors: 0, Skipped: 0

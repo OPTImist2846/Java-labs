@@ -1,0 +1,13 @@
+diff --git a/Back-end java/src/main/java/com/example/fpvfleet/service/PilotService.java b/Back-end java/src/main/java/com/example/fpvfleet/service/PilotService.java
+index 676c59f..9b4dcf9 100644
+--- a/Back-end java/src/main/java/com/example/fpvfleet/service/PilotService.java	
++++ b/Back-end java/src/main/java/com/example/fpvfleet/service/PilotService.java	
+@@ -52,7 +52,7 @@ public class PilotService {
+     public PilotDto updatePilot(Long id, PilotDto pilotDto) {
+         Pilot pilot = findPilot(id);
+         pilotRepository.findByUsername(pilotDto.getUsername())
+-                .filter(other -> !other.getId().equals(id))
++                .filter(other -> other.getId().equals(id))
+                 .ifPresent(other -> {
+                     throw new IllegalArgumentException("Пілот з таким username вже існує");
+                 });

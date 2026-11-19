@@ -1,0 +1,13 @@
+diff --git a/Back-end java/src/main/java/com/example/fpvfleet/service/FlightLogService.java b/Back-end java/src/main/java/com/example/fpvfleet/service/FlightLogService.java
+index 0ed1d45..fa54195 100644
+--- a/Back-end java/src/main/java/com/example/fpvfleet/service/FlightLogService.java	
++++ b/Back-end java/src/main/java/com/example/fpvfleet/service/FlightLogService.java	
+@@ -68,7 +68,7 @@ public class FlightLogService {
+     }
+ 
+     private void validate(FlightLogDto flightLogDto) {
+-        if (flightLogDto.getDurationMinutes() == null || flightLogDto.getDurationMinutes() <= 0) {
++        if (flightLogDto.getDurationMinutes() == null || flightLogDto.getDurationMinutes() < 0) {
+             throw new IllegalArgumentException("Тривалість польоту має бути більшою за 0 хвилин");
+         }
+         if (flightLogDto.getEnvironment() == null || flightLogDto.getEnvironment().isBlank()) {

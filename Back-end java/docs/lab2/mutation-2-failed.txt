@@ -1,0 +1,6 @@
+[ERROR] Tests run: 14, Failures: 2, Errors: 1, Skipped: 0, Time elapsed: 2.153 s <<< FAILURE! -- in com.example.fpvfleet.service.PilotServiceTest
+[ERROR] com.example.fpvfleet.service.PilotServiceTest.updatePilot_usernameTakenByAnotherPilot_throwsAndKeepsEntity -- Time elapsed: 0.031 s <<< FAILURE!
+[ERROR] com.example.fpvfleet.service.PilotServiceTest.updatePilot_emailTakenByAnotherPilot_throwsAndKeepsEntity -- Time elapsed: 0.033 s <<< FAILURE!
+[ERROR]   PilotServiceTest.updatePilot_emailTakenByAnotherPilot_throwsAndKeepsEntity:184 
+[ERROR]   PilotServiceTest.updatePilot_usernameTakenByAnotherPilot_throwsAndKeepsEntity:168 
+[ERROR] Tests run: 14, Failures: 2, Errors: 1, Skipped: 0
