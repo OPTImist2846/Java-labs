@@ -1,0 +1,344 @@
+### 1.1 Токен ADMIN (Keycloak, password grant)
+POST {{tokenUrl}}
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id={{clientId}}&username=admin&password=admin
+
+> {%
+    client.test("admin token", () => client.assert(response.status === 200));
+    client.global.set("adminToken", response.body.access_token);
+%}
+
+### 1.2 Токен PILOT
+POST {{tokenUrl}}
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id={{clientId}}&username=pilot&password=pilot
+
+> {%
+    client.test("pilot token", () => client.assert(response.status === 200));
+    client.global.set("pilotToken", response.body.access_token);
+%}
+
+### 1.3 Токен VIEWER (без ролей)
+POST {{tokenUrl}}
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id={{clientId}}&username=viewer&password=viewer
+
+> {%
+    client.test("viewer token", () => client.assert(response.status === 200));
+    client.global.set("viewerToken", response.body.access_token);
+%}
+
+### 2.1 AC5: запит без токена -> 401 Unauthorized
+GET {{api}}/drones
+
+> {%
+    client.test("401 without token", () => client.assert(response.status === 401));
+%}
+
+### 2.2 AC5: невалідний токен -> 401 Unauthorized
+GET {{api}}/drones
+Authorization: Bearer not-a-real-token
+
+> {%
+    client.test("401 with invalid token", () => client.assert(response.status === 401));
+%}
+
+### 3.1 AC1 Create: ADMIN створює пілота -> 201
+POST {{api}}/pilots
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "username": "demo_{{$randomInt}}",
+  "email": "demo_{{$randomInt}}@fpv.local",
+  "role": "PILOT"
+}
+
+> {%
+    client.test("pilot created", () => client.assert(response.status === 201));
+    client.global.set("pilotId", response.body.id);
+    client.global.set("pilotUsername", response.body.username);
+%}
+
+### 3.2 AC1 Read: список пілотів -> 200
+GET {{api}}/pilots
+Authorization: Bearer {{pilotToken}}
+
+> {%
+    client.test("pilots listed", () => client.assert(response.status === 200));
+%}
+
+### 3.3 AC1 Read: пілот за ID -> 200
+GET {{api}}/pilots/{{pilotId}}
+Authorization: Bearer {{pilotToken}}
+
+> {%
+    client.test("pilot found", () => client.assert(response.status === 200));
+%}
+
+### 3.4 AC1 Update: ADMIN оновлює пілота -> 200
+PUT {{api}}/pilots/{{pilotId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "username": "{{pilotUsername}}",
+  "email": "updated_{{pilotUsername}}@fpv.local",
+  "role": "INSTRUCTOR"
+}
+
+> {%
+    client.test("pilot updated", () => client.assert(response.status === 200 && response.body.role === "INSTRUCTOR"));
+%}
+
+### 4.1 AC1 Create: PILOT створює дрон -> 201
+POST {{api}}/drones
+Authorization: Bearer {{pilotToken}}
+Content-Type: application/json
+
+{
+  "name": "Nazgul5 V2",
+  "frameSize": "5 inch",
+  "pilotId": {{pilotId}}
+}
+
+> {%
+    client.test("drone created", () => client.assert(response.status === 201));
+    client.global.set("droneId", response.body.id);
+%}
+
+### 4.2 AC1 Read: список дронів -> 200
+GET {{api}}/drones
+Authorization: Bearer {{pilotToken}}
+
+> {%
+    client.test("drones listed", () => client.assert(response.status === 200));
+%}
+
+### 4.3 AC1 Read: дрони пілота -> 200
+GET {{api}}/drones/pilot/{{pilotId}}
+Authorization: Bearer {{pilotToken}}
+
+> {%
+    client.test("pilot drones listed", () => client.assert(response.status === 200 && response.body.length === 1));
+%}
+
+### 4.4 AC1 Update: PILOT оновлює дрон -> 200
+PUT {{api}}/drones/{{droneId}}
+Authorization: Bearer {{pilotToken}}
+Content-Type: application/json
+
+{
+  "name": "Nazgul5 V3",
+  "frameSize": "5 inch",
+  "pilotId": {{pilotId}}
+}
+
+> {%
+    client.test("drone updated", () => client.assert(response.status === 200 && response.body.name === "Nazgul5 V3"));
+%}
+
+### 5.1 AC1 Create: PILOT додає обладнання -> 201
+POST {{api}}/equipment
+Authorization: Bearer {{pilotToken}}
+Content-Type: application/json
+
+{
+  "name": "DJI Goggles 3",
+  "type": "GOGGLES",
+  "pilotId": {{pilotId}}
+}
+
+> {%
+    client.test("equipment created", () => client.assert(response.status === 201));
+    client.global.set("equipmentId", response.body.id);
+%}
+
+### 5.2 AC1 Update: PILOT оновлює обладнання -> 200
+PUT {{api}}/equipment/{{equipmentId}}
+Authorization: Bearer {{pilotToken}}
+Content-Type: application/json
+
+{
+  "name": "RadioMaster TX16S",
+  "type": "RADIO",
+  "pilotId": {{pilotId}}
+}
+
+> {%
+    client.test("equipment updated", () => client.assert(response.status === 200 && response.body.type === "RADIO"));
+%}
+
+### 5.3 AC1 Read: список обладнання -> 200
+GET {{api}}/equipment
+Authorization: Bearer {{pilotToken}}
+
+> {%
+    client.test("equipment listed", () => client.assert(response.status === 200));
+%}
+
+### 6.1 AC1 Create: PILOT створює журнал польоту -> 201
+POST {{api}}/flight-logs
+Authorization: Bearer {{pilotToken}}
+Content-Type: application/json
+
+{
+  "pilotId": {{pilotId}},
+  "droneId": {{droneId}},
+  "environment": "OUTDOOR",
+  "durationMinutes": 12,
+  "flightDate": "2026-11-19T10:30:00",
+  "notes": "Freestyle session"
+}
+
+> {%
+    client.test("flight log created", () => client.assert(response.status === 201));
+    client.global.set("logId", response.body.id);
+%}
+
+### 6.2 AC1 Update: PILOT оновлює журнал -> 200
+PUT {{api}}/flight-logs/{{logId}}
+Authorization: Bearer {{pilotToken}}
+Content-Type: application/json
+
+{
+  "pilotId": {{pilotId}},
+  "droneId": {{droneId}},
+  "environment": "INDOOR",
+  "durationMinutes": 20,
+  "flightDate": "2026-11-19T11:00:00",
+  "notes": "Whoop practice"
+}
+
+> {%
+    client.test("flight log updated", () => client.assert(response.status === 200 && response.body.durationMinutes === 20));
+%}
+
+### 6.3 AC1 Read: журнал за ID -> 200
+GET {{api}}/flight-logs/{{logId}}
+Authorization: Bearer {{pilotToken}}
+
+> {%
+    client.test("flight log found", () => client.assert(response.status === 200));
+%}
+
+### 7.1 AC6 SecurityFilterChain: PILOT створює пілота (/api/v1/pilots/** лише ADMIN) -> 403
+POST {{api}}/pilots
+Authorization: Bearer {{pilotToken}}
+Content-Type: application/json
+
+{
+  "username": "hacker",
+  "email": "hacker@fpv.local",
+  "role": "ADMIN"
+}
+
+> {%
+    client.test("403 from filter chain", () => client.assert(response.status === 403));
+%}
+
+### 7.2 AC6 SecurityFilterChain: PILOT видаляє дрон (DELETE /api/** лише ADMIN) -> 403
+DELETE {{api}}/drones/{{droneId}}
+Authorization: Bearer {{pilotToken}}
+
+> {%
+    client.test("403 from filter chain", () => client.assert(response.status === 403));
+%}
+
+### 8.1 AC7 @PreAuthorize: VIEWER читає дрони (фільтр пропускає, метод сервісу блокує) -> 403
+GET {{api}}/drones
+Authorization: Bearer {{viewerToken}}
+
+> {%
+    client.test("403 from @PreAuthorize", () => client.assert(response.status === 403 && response.body.message.includes("Access Denied")));
+%}
+
+### 8.2 AC7 @PreAuthorize: VIEWER створює журнал польоту -> 403
+POST {{api}}/flight-logs
+Authorization: Bearer {{viewerToken}}
+Content-Type: application/json
+
+{
+  "pilotId": {{pilotId}},
+  "environment": "OUTDOOR",
+  "durationMinutes": 5,
+  "flightDate": "2026-11-19T12:00:00"
+}
+
+> {%
+    client.test("403 from @PreAuthorize", () => client.assert(response.status === 403));
+%}
+
+### 9.1 Помилка: неіснуючий дрон -> 404
+GET {{api}}/drones/999999
+Authorization: Bearer {{adminToken}}
+
+> {%
+    client.test("404 not found", () => client.assert(response.status === 404));
+%}
+
+### 9.2 Помилка: дрон для неіснуючого пілота -> 404
+POST {{api}}/drones
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Ghost",
+  "frameSize": "3 inch",
+  "pilotId": 999999
+}
+
+> {%
+    client.test("404 pilot not found", () => client.assert(response.status === 404));
+%}
+
+### 10.1 AC1 Delete: ADMIN видаляє дрон -> 204 (журнал лишається з droneId = null)
+DELETE {{api}}/drones/{{droneId}}
+Authorization: Bearer {{adminToken}}
+
+> {%
+    client.test("drone deleted", () => client.assert(response.status === 204));
+%}
+
+### 10.2 Журнал після видалення дрона -> 200, droneId = null
+GET {{api}}/flight-logs/{{logId}}
+Authorization: Bearer {{adminToken}}
+
+> {%
+    client.test("drone reference cleared", () => client.assert(response.status === 200 && response.body.droneId === null));
+%}
+
+### 10.3 AC1 Delete: ADMIN видаляє обладнання -> 204
+DELETE {{api}}/equipment/{{equipmentId}}
+Authorization: Bearer {{adminToken}}
+
+> {%
+    client.test("equipment deleted", () => client.assert(response.status === 204));
+%}
+
+### 10.4 AC1 Delete: ADMIN видаляє журнал -> 204
+DELETE {{api}}/flight-logs/{{logId}}
+Authorization: Bearer {{adminToken}}
+
+> {%
+    client.test("flight log deleted", () => client.assert(response.status === 204));
+%}
+
+### 10.5 AC1 Delete: ADMIN видаляє пілота -> 204
+DELETE {{api}}/pilots/{{pilotId}}
+Authorization: Bearer {{adminToken}}
+
+> {%
+    client.test("pilot deleted", () => client.assert(response.status === 204));
+%}
+
+### 10.6 Пілот після видалення -> 404
+GET {{api}}/pilots/{{pilotId}}
+Authorization: Bearer {{adminToken}}
+
+> {%
+    client.test("pilot gone", () => client.assert(response.status === 404));
+%}
