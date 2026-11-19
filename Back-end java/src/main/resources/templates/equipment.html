@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Обладнання')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <h1>Обладнання</h1>
+    <table>
+        <thead><tr><th>ID</th><th>Назва</th><th>Тип</th><th>Пілот</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="e : ${equipmentList}">
+            <td th:text="${e.id}"></td>
+            <td th:text="${e.name}"></td>
+            <td th:text="${e.type}"></td>
+            <td th:text="${pilotNames[e.pilotId]}"></td>
+            <td class="actions">
+                <a class="btn ghost" th:href="@{/ui/equipment/{id}/edit(id=${e.id})}">Редагувати</a>
+                <form th:action="@{/ui/equipment/{id}/delete(id=${e.id})}" method="post" class="inline"
+                      onsubmit="return confirm('Видалити обладнання?')">
+                    <button type="submit" class="danger">Видалити</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(equipmentList)}"><td colspan="5">Записів немає</td></tr>
+        </tbody>
+    </table>
+
+    <h2 th:text="${form.id == null} ? 'Нове обладнання' : 'Редагування обладнання #' + ${form.id}"></h2>
+    <form class="card" method="post" th:object="${form}"
+          th:action="${form.id == null} ? @{/ui/equipment} : @{/ui/equipment/{id}(id=${form.id})}">
+        <label>Назва <input th:field="*{name}" required></label>
+        <label>Тип
+            <input th:field="*{type}" list="equipment-types" required>
+            <datalist id="equipment-types">
+                <option value="GOGGLES"></option>
+                <option value="RADIO"></option>
+                <option value="BATTERY"></option>
+                <option value="CHARGER"></option>
+            </datalist>
+        </label>
+        <label>Пілот
+            <select th:field="*{pilotId}" required>
+                <option value="">— оберіть —</option>
+                <option th:each="p : ${pilots}" th:value="${p.id}" th:text="${p.username}"></option>
+            </select>
+        </label>
+        <div class="actions">
+            <button type="submit" th:text="${form.id == null} ? 'Створити' : 'Зберегти'"></button>
+            <a th:if="${form.id != null}" class="btn ghost" th:href="@{/ui/equipment}">Скасувати</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

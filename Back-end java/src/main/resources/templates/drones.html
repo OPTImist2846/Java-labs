@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Дрони')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <h1>Дрони</h1>
+    <table>
+        <thead><tr><th>ID</th><th>Назва</th><th>Розмір рами</th><th>Пілот</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="d : ${drones}">
+            <td th:text="${d.id}"></td>
+            <td th:text="${d.name}"></td>
+            <td th:text="${d.frameSize}"></td>
+            <td th:text="${pilotNames[d.pilotId]}"></td>
+            <td class="actions">
+                <a class="btn ghost" th:href="@{/ui/drones/{id}/edit(id=${d.id})}">Редагувати</a>
+                <form th:action="@{/ui/drones/{id}/delete(id=${d.id})}" method="post" class="inline"
+                      onsubmit="return confirm('Видалити дрон?')">
+                    <button type="submit" class="danger">Видалити</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(drones)}"><td colspan="5">Записів немає</td></tr>
+        </tbody>
+    </table>
+
+    <h2 th:text="${form.id == null} ? 'Новий дрон' : 'Редагування дрона #' + ${form.id}"></h2>
+    <form class="card" method="post" th:object="${form}"
+          th:action="${form.id == null} ? @{/ui/drones} : @{/ui/drones/{id}(id=${form.id})}">
+        <label>Назва <input th:field="*{name}" required></label>
+        <label>Розмір рами <input th:field="*{frameSize}" placeholder="5 inch"></label>
+        <label>Пілот
+            <select th:field="*{pilotId}" required>
+                <option value="">— оберіть —</option>
+                <option th:each="p : ${pilots}" th:value="${p.id}" th:text="${p.username}"></option>
+            </select>
+        </label>
+        <div class="actions">
+            <button type="submit" th:text="${form.id == null} ? 'Створити' : 'Зберегти'"></button>
+            <a th:if="${form.id != null}" class="btn ghost" th:href="@{/ui/drones}">Скасувати</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · FPV Fleet'">FPV Fleet</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 0; background: #f4f5f7; color: #1d2330; }
+        nav { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; padding: 12px 24px; background: #1d2330; }
+        nav a { color: #fff; text-decoration: none; }
+        nav .brand { font-weight: 700; margin-right: 12px; }
+        nav .spacer { flex: 1; }
+        nav .user { color: #b8c1d6; font-size: 14px; }
+        main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th, td { padding: 8px 10px; border-bottom: 1px solid #e3e6ec; text-align: left; vertical-align: top; }
+        th { background: #eef0f4; }
+        .card { background: #fff; padding: 16px; border-radius: 8px; margin-top: 16px; display: grid; gap: 10px; max-width: 520px; }
+        label { display: grid; gap: 4px; font-size: 14px; }
+        input, select, textarea { padding: 6px 8px; font: inherit; }
+        button, .btn { padding: 6px 12px; border: 0; border-radius: 4px; background: #2f6fed; color: #fff; cursor: pointer; text-decoration: none; font: inherit; display: inline-block; }
+        button.danger { background: #c93636; }
+        button.ghost, .btn.ghost { background: #6b7385; }
+        form.inline { display: inline; }
+        .actions { white-space: nowrap; display: flex; gap: 6px; }
+        .flash { max-width: 1100px; margin: 16px auto 0; padding: 10px 16px; border-radius: 6px; }
+        .flash.ok { background: #dff3e4; color: #1d5e2f; }
+        .flash.err { background: #fbe0e0; color: #8a1f1f; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; background: #e3ebff; color: #2346a0; font-size: 12px; margin-right: 4px; }
+    </style>
+</head>
+<body>
+<header th:fragment="header">
+    <nav>
+        <a class="brand" th:href="@{/}">FPV Fleet</a>
+        <th:block th:if="${currentUser != null}">
+            <a th:href="@{/ui}">Панель</a>
+            <a th:href="@{/ui/pilots}">Пілоти</a>
+            <a th:href="@{/ui/drones}">Дрони</a>
+            <a th:href="@{/ui/equipment}">Обладнання</a>
+            <a th:href="@{/ui/flight-logs}">Журнали польотів</a>
+        </th:block>
+        <span class="spacer"></span>
+        <th:block th:if="${currentUser != null}">
+            <span class="user">
+                <span th:text="${currentUser.username}">user</span>
+                <span th:each="role : ${currentUser.roles}" class="tag" th:text="${role}">ROLE</span>
+            </span>
+            <form th:action="@{/logout}" method="post" class="inline">
+                <button type="submit" class="ghost">Вийти</button>
+            </form>
+        </th:block>
+        <a th:if="${currentUser == null}" class="btn" th:href="@{/oauth2/authorization/keycloak}">Увійти через Keycloak</a>
+    </nav>
+    <div class="flash ok" th:if="${message}" th:text="${message}"></div>
+    <div class="flash err" th:if="${error}" th:text="${error}"></div>
+</header>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('403')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <h1>403 Forbidden</h1>
+    <p>Недостатньо прав для виконання цієї дії. Запит заблоковано через <code>@PreAuthorize</code>.</p>
+    <table>
+        <tr><th>Запит</th><td th:text="${path}"></td></tr>
+        <tr><th>Причина</th><td th:text="${reason}"></td></tr>
+        <tr th:if="${currentUser != null}">
+            <th>Ваші ролі</th>
+            <td>
+                <span th:each="role : ${currentUser.roles}" class="tag" th:text="${role}"></span>
+                <span th:if="${#lists.isEmpty(currentUser.roles)}">немає</span>
+            </td>
+        </tr>
+    </table>
+    <p><a class="btn" th:href="@{/ui}">До панелі</a></p>
+</main>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Журнали польотів')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <h1>Журнали польотів</h1>
+    <table>
+        <thead>
+        <tr><th>ID</th><th>Дата</th><th>Пілот</th><th>Дрон</th><th>Середовище</th><th>Хв</th><th>Нотатки</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="l : ${logs}">
+            <td th:text="${l.id}"></td>
+            <td th:text="${#temporals.format(l.flightDate, 'dd.MM.yyyy HH:mm')}"></td>
+            <td th:text="${pilotNames[l.pilotId]}"></td>
+            <td th:text="${l.droneId != null} ? ${droneNames[l.droneId]} : '—'"></td>
+            <td th:text="${l.environment}"></td>
+            <td th:text="${l.durationMinutes}"></td>
+            <td th:text="${l.notes}"></td>
+            <td class="actions">
+                <a class="btn ghost" th:href="@{/ui/flight-logs/{id}/edit(id=${l.id})}">Редагувати</a>
+                <form th:action="@{/ui/flight-logs/{id}/delete(id=${l.id})}" method="post" class="inline"
+                      onsubmit="return confirm('Видалити журнал?')">
+                    <button type="submit" class="danger">Видалити</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(logs)}"><td colspan="8">Записів немає</td></tr>
+        </tbody>
+    </table>
+
+    <h2 th:text="${form.id == null} ? 'Новий журнал польоту' : 'Редагування журналу #' + ${form.id}"></h2>
+    <form class="card" method="post" th:object="${form}"
+          th:action="${form.id == null} ? @{/ui/flight-logs} : @{/ui/flight-logs/{id}(id=${form.id})}">
+        <label>Пілот
+            <select th:field="*{pilotId}" required>
+                <option value="">— оберіть —</option>
+                <option th:each="p : ${pilots}" th:value="${p.id}" th:text="${p.username}"></option>
+            </select>
+        </label>
+        <label>Дрон
+            <select th:field="*{droneId}">
+                <option value="">— без дрона —</option>
+                <option th:each="d : ${drones}" th:value="${d.id}" th:text="${d.name}"></option>
+            </select>
+        </label>
+        <label>Середовище
+            <input th:field="*{environment}" list="environments" required>
+            <datalist id="environments">
+                <option value="OUTDOOR"></option>
+                <option value="INDOOR"></option>
+                <option value="SIMULATOR"></option>
+            </datalist>
+        </label>
+        <label>Тривалість, хв <input type="number" min="1" th:field="*{durationMinutes}" required></label>
+        <label>Дата і час <input type="datetime-local" th:field="*{flightDate}" required></label>
+        <label>Нотатки <textarea th:field="*{notes}" rows="3" maxlength="500"></textarea></label>
+        <div class="actions">
+            <button type="submit" th:text="${form.id == null} ? 'Створити' : 'Зберегти'"></button>
+            <a th:if="${form.id != null}" class="btn ghost" th:href="@{/ui/flight-logs}">Скасувати</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

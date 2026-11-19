@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Головна')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <h1>FPV Fleet</h1>
+    <p>Система обліку FPV-пілотів, їхніх дронів, обладнання та журналів польотів.</p>
+    <p th:if="${currentUser == null}">
+        Для роботи з даними потрібно увійти через Keycloak (OIDC).
+        <a class="btn" th:href="@{/oauth2/authorization/keycloak}">Увійти</a>
+    </p>
+    <p th:if="${currentUser != null}">
+        Ви увійшли як <b th:text="${currentUser.username}"></b>.
+        <a class="btn" th:href="@{/ui}">Перейти до панелі</a>
+    </p>
+</main>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Пілоти')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <h1>Пілоти</h1>
+    <table>
+        <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Роль</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="p : ${pilots}">
+            <td th:text="${p.id}"></td>
+            <td th:text="${p.username}"></td>
+            <td th:text="${p.email}"></td>
+            <td th:text="${p.role}"></td>
+            <td class="actions">
+                <a class="btn ghost" th:href="@{/ui/pilots/{id}/edit(id=${p.id})}">Редагувати</a>
+                <form th:action="@{/ui/pilots/{id}/delete(id=${p.id})}" method="post" class="inline"
+                      onsubmit="return confirm('Видалити пілота разом з його дронами, обладнанням та журналами?')">
+                    <button type="submit" class="danger">Видалити</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(pilots)}"><td colspan="5">Записів немає</td></tr>
+        </tbody>
+    </table>
+
+    <h2 th:text="${form.id == null} ? 'Новий пілот' : 'Редагування пілота #' + ${form.id}"></h2>
+    <form class="card" method="post" th:object="${form}"
+          th:action="${form.id == null} ? @{/ui/pilots} : @{/ui/pilots/{id}(id=${form.id})}">
+        <label>Username <input th:field="*{username}" required></label>
+        <label>Email <input type="email" th:field="*{email}" required></label>
+        <label>Роль у команді
+            <input th:field="*{role}" list="pilot-roles" required>
+            <datalist id="pilot-roles">
+                <option value="PILOT"></option>
+                <option value="INSTRUCTOR"></option>
+                <option value="ADMIN"></option>
+            </datalist>
+        </label>
+        <div class="actions">
+            <button type="submit" th:text="${form.id == null} ? 'Створити' : 'Зберегти'"></button>
+            <a th:if="${form.id != null}" class="btn ghost" th:href="@{/ui/pilots}">Скасувати</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>
