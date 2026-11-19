@@ -33,5 +33,10 @@ public class Pilot {
     @OneToMany(mappedBy = "pilot", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
+    private List<Equipment> equipment = new ArrayList<>();
+
+    @OneToMany(mappedBy = "pilot", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @Builder.Default
     private List<FlightLog> flightLogs = new ArrayList<>();
 }

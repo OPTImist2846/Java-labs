@@ -4,6 +4,7 @@ import com.example.fpvfleet.dto.EquipmentDto;
 import com.example.fpvfleet.entity.Equipment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface EquipmentMapper {
@@ -13,4 +14,8 @@ public interface EquipmentMapper {
 
     @Mapping(source = "pilotId", target = "pilot.id")
     Equipment toEntity(EquipmentDto equipmentDto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "pilot", ignore = true)
+    void updateEntity(EquipmentDto equipmentDto, @MappingTarget Equipment equipment);
 }

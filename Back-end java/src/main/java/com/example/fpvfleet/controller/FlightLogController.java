@@ -28,7 +28,17 @@ public class FlightLogController {
 
     @PostMapping
     public ResponseEntity<FlightLogDto> createLog(@RequestBody FlightLogDto flightLogDto) {
-        FlightLogDto createdLog = flightLogService.createLog(flightLogDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdLog);
+        return ResponseEntity.status(HttpStatus.CREATED).body(flightLogService.createLog(flightLogDto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<FlightLogDto> updateLog(@PathVariable Long id, @RequestBody FlightLogDto flightLogDto) {
+        return ResponseEntity.ok(flightLogService.updateLog(id, flightLogDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLog(@PathVariable Long id) {
+        flightLogService.deleteLog(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -2,6 +2,8 @@ package com.example.fpvfleet.service;
 
 import com.example.fpvfleet.dto.EquipmentDto;
 import com.example.fpvfleet.entity.Equipment;
+import com.example.fpvfleet.entity.Pilot;
+import com.example.fpvfleet.exception.ResourceNotFoundException;
 import com.example.fpvfleet.mapper.EquipmentMapper;
 import com.example.fpvfleet.repository.EquipmentRepository;
 import com.example.fpvfleet.repository.PilotRepository;
@@ -10,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,31 +25,52 @@ public class EquipmentService {
     public List<EquipmentDto> getAllEquipment() {
         return equipmentRepository.findAll().stream()
                 .map(equipmentMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public EquipmentDto getEquipmentById(Long id) {
-        Equipment equipment = equipmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Обладнання з ID " + id + " не знайдено"));
-        return equipmentMapper.toDto(equipment);
+        return equipmentMapper.toDto(findEquipment(id));
     }
 
     @Transactional(readOnly = true)
     public List<EquipmentDto> getEquipmentByPilotId(Long pilotId) {
         return equipmentRepository.findAllByPilotId(pilotId).stream()
                 .map(equipmentMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
     public EquipmentDto createEquipment(EquipmentDto equipmentDto) {
-        if (!pilotRepository.existsById(equipmentDto.getPilotId())) {
-            throw new RuntimeException("Пілота з ID " + equipmentDto.getPilotId() + " не знайдено. Неможливо додати обладнання.");
-        }
-
         Equipment equipment = equipmentMapper.toEntity(equipmentDto);
-        Equipment savedEquipment = equipmentRepository.save(equipment);
-        return equipmentMapper.toDto(savedEquipment);
+        equipment.setId(null);
+        equipment.setPilot(findPilot(equipmentDto.getPilotId()));
+        return equipmentMapper.toDto(equipmentRepository.save(equipment));
+    }
+
+    @Transactional
+    public EquipmentDto updateEquipment(Long id, EquipmentDto equipmentDto) {
+        Equipment equipment = findEquipment(id);
+        equipmentMapper.updateEntity(equipmentDto, equipment);
+        equipment.setPilot(findPilot(equipmentDto.getPilotId()));
+        return equipmentMapper.toDto(equipment);
+    }
+
+    @Transactional
+    public void deleteEquipment(Long id) {
+        equipmentRepository.delete(findEquipment(id));
+    }
+
+    private Equipment findEquipment(Long id) {
+        return equipmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Обладнання з ID " + id + " не знайдено"));
+    }
+
+    private Pilot findPilot(Long pilotId) {
+        if (pilotId == null) {
+            throw new IllegalArgumentException("pilotId є обов'язковим");
+        }
+        return pilotRepository.findById(pilotId)
+                .orElseThrow(() -> new ResourceNotFoundException("Пілота з ID " + pilotId + " не знайдено"));
     }
 }

@@ -6,5 +6,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="db/changelog/changesets/v1-init-schema.xml"/>
+    <include file="db/changelog/changesets/v2-flight-log-drone-set-null.xml"/>
 
 </databaseChangeLog>

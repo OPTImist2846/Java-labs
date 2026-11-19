@@ -33,7 +33,17 @@ public class EquipmentController {
 
     @PostMapping
     public ResponseEntity<EquipmentDto> createEquipment(@RequestBody EquipmentDto equipmentDto) {
-        EquipmentDto createdEquipment = equipmentService.createEquipment(equipmentDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdEquipment);
+        return ResponseEntity.status(HttpStatus.CREATED).body(equipmentService.createEquipment(equipmentDto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EquipmentDto> updateEquipment(@PathVariable Long id, @RequestBody EquipmentDto equipmentDto) {
+        return ResponseEntity.ok(equipmentService.updateEquipment(id, equipmentDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEquipment(@PathVariable Long id) {
+        equipmentService.deleteEquipment(id);
+        return ResponseEntity.noContent().build();
     }
 }

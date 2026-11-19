@@ -28,7 +28,17 @@ public class PilotController {
 
     @PostMapping
     public ResponseEntity<PilotDto> createPilot(@RequestBody PilotDto pilotDto) {
-        PilotDto createdPilot = pilotService.createPilot(pilotDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPilot);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pilotService.createPilot(pilotDto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PilotDto> updatePilot(@PathVariable Long id, @RequestBody PilotDto pilotDto) {
+        return ResponseEntity.ok(pilotService.updatePilot(id, pilotDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePilot(@PathVariable Long id) {
+        pilotService.deletePilot(id);
+        return ResponseEntity.noContent().build();
     }
 }

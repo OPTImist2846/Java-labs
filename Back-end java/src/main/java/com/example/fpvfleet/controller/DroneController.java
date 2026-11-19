@@ -5,7 +5,6 @@ import com.example.fpvfleet.service.DroneService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,10 +32,18 @@ public class DroneController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DroneDto> createDrone(@RequestBody DroneDto droneDto) {
-        DroneDto createdDrone = droneService.createDrone(droneDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdDrone);
+        return ResponseEntity.status(HttpStatus.CREATED).body(droneService.createDrone(droneDto));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<DroneDto> updateDrone(@PathVariable Long id, @RequestBody DroneDto droneDto) {
+        return ResponseEntity.ok(droneService.updateDrone(id, droneDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDrone(@PathVariable Long id) {
+        droneService.deleteDrone(id);
+        return ResponseEntity.noContent().build();
+    }
 }

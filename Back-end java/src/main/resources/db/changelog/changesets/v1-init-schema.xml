@@ -6,7 +6,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1" author="oleksii">
-        <!-- Таблиця Pilots -->
         <createTable tableName="pilots">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -22,7 +21,6 @@
             </column>
         </createTable>
 
-        <!-- Таблиця Drones -->
         <createTable tableName="drones">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -40,7 +38,6 @@
                                  constraintName="fk_drones_pilot_id"
                                  referencedTableName="pilots" referencedColumnNames="id"/>
 
-        <!-- Таблиця Equipment -->
         <createTable tableName="equipment">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -60,7 +57,6 @@
                                  constraintName="fk_equipment_pilot_id"
                                  referencedTableName="pilots" referencedColumnNames="id"/>
 
-        <!-- Таблиця Flight Logs -->
         <createTable tableName="flight_logs">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
