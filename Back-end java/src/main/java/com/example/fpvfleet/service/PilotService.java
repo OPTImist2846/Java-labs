@@ -39,6 +39,9 @@ public class PilotService {
         if (pilotRepository.findByUsername(pilotDto.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Пілот з таким username вже існує");
         }
+        if (pilotRepository.findByEmail(pilotDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Пілот з таким email вже існує");
+        }
         Pilot pilot = pilotMapper.toEntity(pilotDto);
         pilot.setId(null);
         return pilotMapper.toDto(pilotRepository.save(pilot));
@@ -52,6 +55,11 @@ public class PilotService {
                 .filter(other -> !other.getId().equals(id))
                 .ifPresent(other -> {
                     throw new IllegalArgumentException("Пілот з таким username вже існує");
+                });
+        pilotRepository.findByEmail(pilotDto.getEmail())
+                .filter(other -> !other.getId().equals(id))
+                .ifPresent(other -> {
+                    throw new IllegalArgumentException("Пілот з таким email вже існує");
                 });
         pilotMapper.updateEntity(pilotDto, pilot);
         return pilotMapper.toDto(pilot);

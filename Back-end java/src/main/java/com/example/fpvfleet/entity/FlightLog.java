@@ -6,7 +6,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "flight_logs")
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

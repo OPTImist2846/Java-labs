@@ -42,6 +42,7 @@ public class FlightLogService {
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public FlightLogDto createLog(FlightLogDto flightLogDto) {
+        validate(flightLogDto);
         FlightLog log = flightLogMapper.toEntity(flightLogDto);
         log.setId(null);
         log.setPilot(findPilot(flightLogDto.getPilotId()));
@@ -53,6 +54,7 @@ public class FlightLogService {
     @PreAuthorize("hasAnyRole('ADMIN', 'PILOT')")
     public FlightLogDto updateLog(Long id, FlightLogDto flightLogDto) {
         FlightLog log = findLog(id);
+        validate(flightLogDto);
         flightLogMapper.updateEntity(flightLogDto, log);
         log.setPilot(findPilot(flightLogDto.getPilotId()));
         log.setDrone(findDrone(flightLogDto.getDroneId()));
@@ -63,6 +65,18 @@ public class FlightLogService {
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteLog(Long id) {
         flightLogRepository.delete(findLog(id));
+    }
+
+    private void validate(FlightLogDto flightLogDto) {
+        if (flightLogDto.getDurationMinutes() == null || flightLogDto.getDurationMinutes() <= 0) {
+            throw new IllegalArgumentException("Тривалість польоту має бути більшою за 0 хвилин");
+        }
+        if (flightLogDto.getEnvironment() == null || flightLogDto.getEnvironment().isBlank()) {
+            throw new IllegalArgumentException("Середовище польоту є обов'язковим");
+        }
+        if (flightLogDto.getFlightDate() == null) {
+            throw new IllegalArgumentException("Дата польоту є обов'язковою");
+        }
     }
 
     private FlightLog findLog(Long id) {

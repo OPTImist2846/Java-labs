@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -26,11 +27,12 @@ public class FlightLogUiController {
     private final FlightLogService flightLogService;
     private final PilotService pilotService;
     private final DroneService droneService;
+    private final Clock clock;
 
     @GetMapping
     public String list(Model model) {
         FlightLogDto form = new FlightLogDto();
-        form.setFlightDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+        form.setFlightDate(LocalDateTime.now(clock).truncatedTo(ChronoUnit.MINUTES));
         return render(model, form);
     }
 

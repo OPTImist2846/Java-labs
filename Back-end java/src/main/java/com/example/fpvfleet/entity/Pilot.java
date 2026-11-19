@@ -7,7 +7,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "pilots")
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
