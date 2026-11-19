@@ -1,0 +1,100 @@
+{
+  "realm": "fpv-fleet",
+  "enabled": true,
+  "sslRequired": "none",
+  "accessTokenLifespan": 1800,
+  "roles": {
+    "realm": [
+      { "name": "ADMIN", "description": "Повний доступ" },
+      { "name": "PILOT", "description": "Пілот: читання та запис власних даних" }
+    ]
+  },
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "admin@fpv.local",
+      "emailVerified": true,
+      "firstName": "Fleet",
+      "lastName": "Admin",
+      "credentials": [{ "type": "password", "value": "admin", "temporary": false }],
+      "realmRoles": ["ADMIN", "PILOT"]
+    },
+    {
+      "username": "pilot",
+      "enabled": true,
+      "email": "pilot@fpv.local",
+      "emailVerified": true,
+      "firstName": "Fpv",
+      "lastName": "Pilot",
+      "credentials": [{ "type": "password", "value": "pilot", "temporary": false }],
+      "realmRoles": ["PILOT"]
+    },
+    {
+      "username": "viewer",
+      "enabled": true,
+      "email": "viewer@fpv.local",
+      "emailVerified": true,
+      "firstName": "Guest",
+      "lastName": "Viewer",
+      "credentials": [{ "type": "password", "value": "viewer", "temporary": false }],
+      "realmRoles": []
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "fpv-ui",
+      "name": "FPV Fleet UI",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "fpv-ui-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:8080/*"],
+      "webOrigins": ["http://localhost:8080"],
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:8080/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "realm-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "fpv-cli",
+      "name": "FPV Fleet API client (curl / Postman / HTTP client)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "realm-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ]
+}
