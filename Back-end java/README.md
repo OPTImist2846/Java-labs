@@ -114,3 +114,63 @@ Arrange, Act, Assert, для моків використано BDD-стиль `g
 Існуючий код покрито unit-тестами на JUnit 5, Mockito та AssertJ з покриттям 87.8%. Тести
 перевіряють як звичайні сценарії, так і обробку помилок, працюють без Spring-контексту і реально
 ловлять зламану логіку. Під час тестування знайдено та виправлено чотири дефекти.
+
+## Лабораторна робота №3. Map, Set, Generics, Wildcards
+
+**Завдання:** вісім вправ на колекції `Map` і `Set`, generic-класи та методи, а також upper- і
+lower-bounded wildcards.
+
+Код знаходиться в пакеті `com.example.fpvfleet.lab3`, по одному підпакету на тему. Усі завдання
+демонструє клас `Lab3Demo`: його можна запустити в IntelliJ або командою
+
+```
+./mvnw compile
+java -cp target/classes com.example.fpvfleet.lab3.Lab3Demo
+```
+
+### Виконання завдань
+
+**1. Реєстр студентів.** `Student` є record з номером залікової книжки, ім'ям, прізвищем, групою та
+середнім балом. `StudentRegistry` зберігає студентів у `LinkedHashMap` за номером залікової, тому
+пошук за ID працює швидко, а список виводиться в порядку додавання. Є методи додавання (дублікат
+номера не перезаписує існуючого студента), видалення, пошуку за ID, прізвищем і групою та виведення
+всіх студентів.
+
+**2. Унікальні елементи.** `UniqueElements.unique` повертає `LinkedHashSet`, тобто прибирає дублікати
+і зберігає порядок першої появи. `countOccurrences` повертає `Map` з кількістю входжень кожного
+елемента.
+
+**3. Box&lt;T&gt;.** Ящик з необов'язковою місткістю: `put` кладе предмет, `take` дістає перший
+покладений і повертає `Optional`. Перевірено з `String`, `Integer`, `Student` та `List<Double>`.
+
+**4. findMax.** Сигнатура `<T extends Comparable<? super T>> T findMax(T[] array)`. Перевірено з
+`Integer`, `Double`, `Character`, `String`, а також з `LocalDate`, який реалізує `Comparable` через
+батьківський інтерфейс. Порожній масив або `null` в елементах дають `IllegalArgumentException`.
+
+**5. Pair&lt;F, S&gt;.** Пара двох значень будь-яких типів, наприклад `Pair<Integer, String>` і
+`Pair<String, List<Integer>>`. Метод `isSameAs` порівнює дві пари за вмістом, а `compare` впорядковує
+пари, якщо обидва компоненти порівнювані.
+
+**6. Upper-bounded wildcard.** Абстрактний `Shape` з `getArea()`, підкласи `Circle` і `Rectangle`.
+`ShapeCalculator.calculateTotalArea(List<? extends Shape>)` приймає `List<Shape>`, `List<Circle>`
+і `List<Rectangle>`.
+
+**7. Lower-bounded wildcard.** `IntegerLists.addToList(List<? super Integer>)` додає числа від 1 до 10
+і працює з `List<Integer>`, `List<Number>` та `List<Object>`.
+
+**8. Притулок для тварин.** Ієрархія `Animal`, `Dog`, `Cat` і `Labrador extends Dog`. `AnimalShelter`
+тримає окремі списки собак та інших тварин. `addAnimals(List<? super Dog>, Collection<? extends Dog>)`
+поєднує обидва види wildcard, тому до списку собак можна додати й `Labrador`. `printAnimalSounds`
+проходить по `List<? extends Animal>` і виводить звук кожної тварини.
+
+### Тестування
+
+Кожне завдання покрито unit-тестами за правилами лабораторної №2, разом 85 тестів для lab3.
+Тести перевіряють і звичайні сценарії, і помилкові дані. Покриття коду lab3 становить 99%,
+загальне покриття проєкту 92%.
+
+### Висновок
+
+На практичних прикладах реалізовано роботу з `Map` і `Set`, generic-класи та методи з обмеженнями
+типів, а також показано різницю між `? extends` (читання з колекції підтипів) і `? super`
+(запис у колекцію супертипів).
